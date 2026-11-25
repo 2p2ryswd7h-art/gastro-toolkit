@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Gastro Toolkit" />
+  <meta name="theme-color" content="#0b0f17" />
+  <title>Gastro Toolkit · Management System</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --surface: #131a26;
+      --surface-2: #1a2333;
+      --border: #243044;
+      --primary: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.15);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: 92px;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(11, 15, 23, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    /* Container & Views */
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .view {
+      display: none;
+    }
+    .view.active {
+      display: block;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+
+    /* Cards & Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 21px;
+      font-weight: 700;
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .text-danger { color: var(--danger); }
+    .text-warning { color: var(--warning); }
+    .text-success { color: var(--success); }
+    .text-primary { color: var(--primary); }
+
+    /* Alerts */
+    .alert-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--surface-2);
+      border-left: 3px solid var(--warning);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .alert-item.danger {
+      border-left-color: var(--danger);
+    }
+
+    /* Buttons & Inputs */
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:active { opacity: 0.85; }
+    .btn-secondary {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .btn-sm {
+      padding: 7px 11px;
+      font-size: 12px;
+      width: auto;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 11px 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* List Items */
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .list-item:last-child { border-bottom: none; }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .badge.warn {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+
+    .badge.bad {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    /* Bottom Navigation */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(19, 26, 38, 0.96);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+      z-index: 30;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-radius: 18px 18px 0 0;
+      width: 100%;
+      max-width: 600px;
+      padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .close-btn {
+      background: var(--surface-2);
+      border: none;
+      color: var(--muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .bar-bg {
+      height: 8px;
+      background: var(--surface-2);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .bar-fill {
+      height: 100%;
+      background: var(--primary);
+      border-radius: 99px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">GT</div>
+      <div>
+        <div class="brand-title">GASTRO TOOLKIT</div>
+        <div class="brand-sub"><span class="dot"></span> PROVOZ ONLINE</div>
+      </div>
+    </div>
+    <button class="btn btn-sm btn-danger" onclick="openModal('wasteModal')">+ Rychlý odpis</button>
+  </header>
+
+  <div class="container">
+    <!-- 1. DASHBOARD -->
+    <section id="view-dashboard" class="view active">
+      <h2>Přehled provozu</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Hodnota skladu</div>
+          <div class="kpi-value" id="kpi-stock">0 Kč</div>
+          <div class="kpi-sub" id="kpi-items-count">0 položek</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Odpisy a ztráty</div>
+          <div class="kpi-value text-danger" id="kpi-waste">0 Kč</div>
+          <div class="kpi-sub" id="kpi-waste-count">0 záznamů</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Průměrný Food Cost</div>
+          <div class="kpi-value text-primary" id="kpi-foodcost">0 %</div>
+          <div class="kpi-sub">Cíl: do 30 %</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Počet receptur</div>
+          <div class="kpi-value" id="kpi-recipes">0</div>
+          <div class="kpi-sub">Aktivní kalkulace</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <strong style="font-size:14px;">Upozornění provozu</strong>
+          <span class="badge warn" id="alerts-badge">0</span>
+        </div>
+        <div id="dashboard-alerts"></div>
+      </div>
+
+      <div class="card">
+        <strong style="font-size:14px; display:block; margin-bottom:8px;">Rozložení hodnoty skladu podle kategorií</strong>
+        <div id="category-bars"></div>
+      </div>
+    </section>
+
+    <!-- 2. RECEPTURY -->
+    <section id="view-recipes" class="view">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="margin:0;">Receptury & Kalkulace</h2>
+        <button class="btn btn-sm" onclick="openModal('recipeModal')">+ Nová receptura</button>
+      </div>
+      <div id="recipes-list"></div>
+    </section>
+
+    <!-- 3. SKLAD -->
+    <section id="view-stock" class="view">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="margin:0;">Sklad surovin</h2>
+        <button class="btn btn-sm" onclick="openModal('stockModal')">+ Příjem / Surovina</button>
+      </div>
+      <div class="form-group">
+        <input type="text" id="stock-search" placeholder="Hledat surovinu..." oninput="renderStock()" />
+      </div>
+      <div class="card" id="stock-list"></div>
+    </section>
+
+    <!-- 4. ODPISY -->
+    <section id="view-waste" class="view">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h2 style="margin:0;">Odpisy a ztráty</h2>
+        <button class="btn btn-sm btn-danger" onclick="openModal('wasteModal')">+ Zadat odpis</button>
+      </div>
+      <div class="card">
+        <div class="kpi-label">Celková ztráta z odpisů</div>
+        <div class="kpi-value text-danger" id="waste-total-big">0 Kč</div>
+      </div>
+      <div class="card" id="waste-list"></div>
+    </section>
+
+    <!-- 5. PORADCE & NASTAVENÍ -->
+    <section id="view-advisor" class="view">
+      <h2>Gastronomický poradce</h2>
+      <div id="advisor-insights"></div>
+
+      <h2 style="margin-top:20px;">Správa dat</h2>
+      <div class="card">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">
+          Data jsou bezpečně uložena v paměti tohoto telefonu. Můžeš je kdykoliv obnovit do výchozího stavu pro testování.
+        </p>
+        <button class="btn btn-secondary" onclick="resetDemoData()">Obnovit ukázková data provozovny</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- SPODNÍ NAVIGACE -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('dashboard', this)">
+      <span class="nav-icon">📊</span>Přehled
+    </button>
+    <button class="nav-btn" onclick="switchTab('recipes', this)">
+      <span class="nav-icon">🍽️</span>Receptury
+    </button>
+    <button class="nav-btn" onclick="switchTab('stock', this)">
+      <span class="nav-icon">📦</span>Sklad
+    </button>
+    <button class="nav-btn" onclick="switchTab('waste', this)">
+      <span class="nav-icon">🗑️</span>Odpisy
+    </button>
+    <button class="nav-btn" onclick="switchTab('advisor', this)">
+      <span class="nav-icon">💡</span>Poradce
+    </button>
+  </nav>
+
+  <!-- MODAL: RYCHLÝ ODPIS -->
+  <div id="wasteModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <strong>Rychlý odpis suroviny</strong>
+        <button class="close-btn" onclick="closeModal('wasteModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label>Vyber surovinu</label>
+        <select id="waste-ingredient"></select>
+      </div>
+      <div class="row-2">
+        <div class="form-group">
+          <label>Množství (g / ml / ks)</label>
+          <input type="number" id="waste-qty" placeholder="např. 200" />
+        </div>
+        <div class="form-group">
+          <label>Důvod odpisu</label>
+          <select id="waste-reason">
+            <option value="Prošlá expirace">Prošlá expirace</option>
+            <option value="Zkažená surovina">Zkažená surovina</option>
+            <option value="Chyba při přípravě">Chyba při přípravě</option>
+            <option value="Zbytky z provozu">Zbytky z provozu</option>
+            <option value="Vrácené jídlo">Vrácené jídlo</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-danger" onclick="submitWaste()">Potvrdit odpis a odečíst ze skladu</button>
+    </div>
+  </div>
+
+  <!-- MODAL: PŘÍJEM NA SKLAD -->
+  <div id="stockModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <strong>Příjem zboží / Nová surovina</strong>
+        <button class="close-btn" onclick="closeModal('stockModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label>Název suroviny</label>
+        <input type="text" id="st-name" placeholder="např. Hovězí svíčková" />
+      </div>
+      <div class="row-2">
+        <div class="form-group">
+          <label>Kategorie</label>
+          <select id="st-cat">
+            <option value="Maso">Maso</option>
+            <option value="Zelenina">Zelenina</option>
+            <option value="Mléčné">Mléčné</option>
+            <option value="Suché">Suché</option>
+            <option value="Ostatní">Ostatní</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Základní jednotka</label>
+          <select id="st-unit">
+            <option value="g">Gramy (g)</option>
+            <option value="ml">Mililitry (ml)</option>
+            <option value="ks">Kusy (ks)</option>
+          </select>
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="form-group">
+          <label>Množství (v g / ml / ks)</label>
+          <input type="number" id="st-qty" placeholder="např. 5000 (pro 5 kg)" />
+        </div>
+        <div class="form-group">
+          <label>Celková nákupní cena (Kč)</label>
+          <input type="number" id="st-total-price" placeholder="např. 1500" />
+        </div>
+      </div>
+      <div class="row-2">
+        <div class="form-group">
+          <label>Minimální zásoba</label>
+          <input type="number" id="st-min" placeholder="např. 1000" />
+        </div>
+        <div class="form-group">
+          <label>Datum expirace</label>
+          <input type="date" id="st-exp" />
+        </div>
+      </div>
+      <button class="btn" onclick="submitStock()">Uložit na sklad</button>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVÁ RECEPTURA -->
+  <div id="recipeModal" class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <strong>Nová receptura</strong>
+        <button class="close-btn" onclick="closeModal('recipeModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label>Název pokrmu</label>
+        <input type="text" id="rec-name" placeholder="např. Hovězí burger" />
+      </div>
+      <div class="row-2">
+        <div class="form-group">
+          <label>Prodejní cena (Kč)</label>
+          <input type="number" id="rec-price" placeholder="např. 285" />
+        </div>
+        <div class="form-group">
+          <label>Alergeny (čísla)</label>
+          <input type="text" id="rec-allergens" placeholder="např. 1, 3, 7" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Přidat surovinu do receptury</label>
+        <div class="row-2">
+          <select id="rec-ing-select"></select>
+          <input type="number" id="rec-ing-qty" placeholder="Množství (g/ml/ks)" />
+        </div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="addTempIngredient()">+ Přidat surovinu</button>
+      </div>
+      <div id="temp-recipe-ings" style="margin-bottom:12px; font-size:13px;"></div>
+      <button class="btn" onclick="submitRecipe()">Uložit recepturu</button>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'gastro_toolkit_v1';
+
+    const defaultData = {
+      ingredients: [
+        { id: '1', name: 'Hovězí maso zadní', category: 'Maso', unit: 'g', stock: 4500, min: 1500, pricePerUnit: 0.30, exp: getFutureDate(4) },
+        { id: '2', name: 'Rýže jasmínová', category: 'Suché', unit: 'g', stock: 8000, min: 2000, pricePerUnit: 0.05, exp: getFutureDate(120) },
+        { id: '3', name: 'Čerstvá zelenina mix', category: 'Zelenina', unit: 'g', stock: 900, min: 1200, pricePerUnit: 0.15, exp: getFutureDate(1) },
+        { id: '4', name: 'Demi-glace omáčka', category: 'Ostatní', unit: 'ml', stock: 2200, min: 500, pricePerUnit: 0.26, exp: getFutureDate(14) },
+        { id: '5', name: 'Smetana 33%', category: 'Mléčné', unit: 'ml', stock: 3000, min: 1000, pricePerUnit: 0.09, exp: getFutureDate(2) }
+      ],
+      recipes: [
+        {
+          id: 'r1',
+          name: 'Hovězí na zelenině s rýží',
+          sellingPrice: 250,
+          allergens: '9',
+          items: [
+            { ingredientId: '1', qty: 150 },
+            { ingredientId: '2', qty: 100 },
+            { ingredientId: '3', qty: 80 },
+            { ingredientId: '4', qty: 30 }
+          ]
+        }
+      ],
+      waste: [
+        { id: 'w1', ingredientName: 'Čerstvá zelenina mix', qty: 400, unit: 'g', loss: 60, reason: 'Prošlá expirace', date: 'Dnes' }
+      ]
+    };
+
+    let state = loadState();
+    let tempRecipeItems = [];
+
+    function getFutureDate(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split('T')[0];
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(defaultData));
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      renderAll();
+    }
+
+    function resetDemoData() {
+      state = JSON.parse(JSON.stringify(defaultData));
+      saveState();
+      alert('Ukázková data byla obnovena.');
+    }
+
+    function switchTab(viewId, btn) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + viewId).classList.add('active');
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function openModal(id) {
+      populateSelects();
+      document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function populateSelects() {
+      const options = state.ingredients.map(i =>
+        `<option value="${i.id}">${i.name} (${i.stock} ${i.unit})</option>`
+      ).join('');
+      document.getElementById('waste-ingredient').innerHTML = options;
+      document.getElementById('rec-ing-select').innerHTML = options;
+    }
+
+    function calcRecipeCost(recipe) {
+      return recipe.items.reduce((sum, item) => {
+        const ing = state.ingredients.find(i => i.id === item.ingredientId);
+        return sum + (ing ? ing.pricePerUnit * item.qty : 0);
+      }, 0);
+    }
+
+    function renderAll() {
+      // KPI Sklad
+      const stockValue = state.ingredients.reduce((s, i) => s + (i.stock * i.pricePerUnit), 0);
+      document.getElementById('kpi-stock').textContent = Math.round(stockValue).toLocaleString('cs-CZ') + ' Kč';
+      document.getElementById('kpi-items-count').textContent = state.ingredients.length + ' položek';
+
+      // KPI Odpisy
+      const wasteValue = state.waste.reduce((s, w) => s + w.loss, 0);
+      document.getElementById('kpi-waste').textContent = Math.round(wasteValue).toLocaleString('cs-CZ') + ' Kč';
+      document.getElementById('waste-total-big').textContent = Math.round(wasteValue).toLocaleString('cs-CZ') + ' Kč';
+      document.getElementById('kpi-waste-count').textContent = state.waste.length + ' záznamů';
+
+      // KPI Receptury & Food Cost
+      document.getElementById('kpi-recipes').textContent = state.recipes.length;
+      let avgFc = 0;
+      if (state.recipes.length > 0) {
+        const totalFc = state.recipes.reduce((s, r) => {
+          const cost = calcRecipeCost(r);
+          return s + (r.sellingPrice > 0 ? (cost / r.sellingPrice) * 100 : 0);
+        }, 0);
+        avgFc = totalFc / state.recipes.length;
+      }
+      document.getElementById('kpi-foodcost').textContent = avgFc.toFixed(1) + ' %';
+
+      // Upozornění
+      const alerts = [];
+      const today = new Date().toISOString().split('T')[0];
+      const inTwoDays = getFutureDate(2);
+
+      state.ingredients.forEach(i => {
+        if (i.stock <= i.min) {
+          alerts.push({ text: `Nízká zásoba: ${i.name} (${i.stock} ${i.unit})`, type: 'warn' });
+        }
+        if (i.exp && i.exp <= inTwoDays) {
+          alerts.push({ text: `Blíží se expirace: ${i.name} (${i.exp})`, type: 'danger' });
+        }
+      });
+
+      document.getElementById('alerts-badge').textContent = alerts.length;
+      document.getElementById('dashboard-alerts').innerHTML = alerts.length
+        ? alerts.map(a => `<div class="alert-item ${a.type === 'danger' ? 'danger' : ''}">${a.text}</div>`).join('')
+        : '<div style="font-size:13px; color:var(--muted);">Vše v pořádku, žádné kritické stavy.</div>';
+
+      // Kategorie graf
+      const cats = {};
+      state.ingredients.forEach(i => {
+        cats[i.category] = (cats[i.category] || 0) + (i.stock * i.pricePerUnit);
+      });
+      document.getElementById('category-bars').innerHTML = Object.entries(cats).map(([cat, val]) => {
+        const pct = stockValue > 0 ? Math.round((val / stockValue) * 100) : 0;
+        return `
+          <div style="margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:12px;">
+              <span>${cat}</span>
+              <span>${Math.round(val)} Kč (${pct} %)</span>
+            </div>
+            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+          </div>`;
+      }).join('');
+
+      renderRecipes();
+      renderStock();
+      renderWaste();
+      renderAdvisor(avgFc, wasteValue);
+    }
+
+    function renderRecipes() {
+      document.getElementById('recipes-list').innerHTML = state.recipes.map(r => {
+        const cost = calcRecipeCost(r);
+        const fc = r.sellingPrice > 0 ? (cost / r.sellingPrice) * 100 : 0;
+        const margin = r.sellingPrice - cost;
+        const fcClass = fc > 35 ? 'bad' : (fc > 30 ? 'warn' : '');
+
+        const ingList = r.items.map(it => {
+          const ing = state.ingredients.find(i => i.id === it.ingredientId);
+          return ing ? `${ing.name} (${it.qty} ${ing.unit})` : '';
+        }).join(', ');
+
+        return `
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+              <div>
+                <strong style="font-size:16px;">${r.name}</strong>
+                <div style="font-size:12px; color:var(--muted); margin-top:2px;">Alergeny: ${r.allergens || 'Neuvedeno'}</div>
+              </div>
+              <span class="badge ${fcClass}">FC ${fc.toFixed(1)} %</span>
+            </div>
+            <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">${ingList}</div>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; background:var(--surface-2); padding:10px; border-radius:10px; font-size:12px;">
+              <div><span style="color:var(--muted);">Náklad:</span><br><strong>${cost.toFixed(1)} Kč</strong></div>
+              <div><span style="color:var(--muted);">Prodej:</span><br><strong>${r.sellingPrice} Kč</strong></div>
+              <div><span style="color:var(--muted);">Rozdíl:</span><br><strong class="text-success">${margin.toFixed(1)} Kč</strong></div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderStock() {
+      const q = (document.getElementById('stock-search').value || '').toLowerCase();
+      const filtered = state.ingredients.filter(i => i.name.toLowerCase().includes(q));
+
+      document.getElementById('stock-list').innerHTML = filtered.map(i => {
+        const low = i.stock <= i.min;
+        return `
+          <div class="list-item">
+            <div>
+              <strong>${i.name}</strong>
+              <div style="font-size:12px; color:var(--muted);">${i.category} · Exp: ${i.exp || '—'}</div>
+            </div>
+            <div style="text-align:right;">
+              <strong class="${low ? 'text-warning' : ''}">${i.stock} ${i.unit}</strong>
+              <div style="font-size:11px; color:var(--muted);">${Math.round(i.stock * i.pricePerUnit)} Kč</div>
+            </div>
+          </div>`;
+      }).join('') || '<div style="font-size:13px; color:var(--muted);">Žádné suroviny nenalezeny.</div>';
+    }
+
+    function renderWaste() {
+      document.getElementById('waste-list').innerHTML = state.waste.slice().reverse().map(w => `
+        <div class="list-item">
+          <div>
+            <strong>${w.ingredientName}</strong>
+            <div style="font-size:12px; color:var(--muted);">${w.reason} · ${w.date}</div>
+          </div>
+          <div style="text-align:right;">
+            <strong class="text-danger">-${Math.round(w.loss)} Kč</strong>
+            <div style="font-size:11px; color:var(--muted);">${w.qty} ${w.unit}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAdvisor(avgFc, wasteValue) {
+      const tips = [];
+      if (avgFc > 30) {
+        tips.push(`Průměrný food cost je ${avgFc.toFixed(1)} %. Zkontroluj prodejní ceny nebo gramáže u nejdražších surovin.`);
+      } else {
+        tips.push(`Průměrný food cost (${avgFc.toFixed(1)} %) držíš pod hranicí 30 %, což je zdravý základ provozu.`);
+      }
+      if (wasteValue > 0) {
+        tips.push(`Evidované odpisy dosáhly ${Math.round(wasteValue)} Kč. Sleduj především suroviny s krátkou expirací.`);
+      }
+      const lowItems = state.ingredients.filter(i => i.stock <= i.min);
+      if (lowItems.length > 0) {
+        tips.push(`Do nákupního seznamu doporučuji ihned zařadit: ${lowItems.map(i => i.name).join(', ')}.`);
+      }
+
+      document.getElementById('advisor-insights').innerHTML = tips.map(t =>
+        `<div class="card" style="border-left:3px solid var(--primary); font-size:13px; line-height:1.5;">${t}</div>`
+      ).join('');
+    }
+
+    // Akce formulářů
+    function submitWaste() {
+      const id = document.getElementById('waste-ingredient').value;
+      const qty = parseFloat(document.getElementById('waste-qty').value);
+      const reason = document.getElementById('waste-reason').value;
+      if (!id || !qty || qty <= 0) return alert('Zadej platné množství.');
+
+      const ing = state.ingredients.find(i => i.id === id);
+      const loss = qty * ing.pricePerUnit;
+      ing.stock = Math.max(0, ing.stock - qty);
+
+      state.waste.push({
+        id: Date.now().toString(),
+        ingredientName: ing.name,
+        qty,
+        unit: ing.unit,
+        loss,
+        reason,
+        date: new Date().toLocaleDateString('cs-CZ')
+      });
+
+      document.getElementById('waste-qty').value = '';
+      closeModal('wasteModal');
+      saveState();
+    }
+
+    function submitStock() {
+      const name = document.getElementById('st-name').value.trim();
+      const category = document.getElementById('st-cat').value;
+      const unit = document.getElementById('st-unit').value;
+      const qty = parseFloat(document.getElementById('st-qty').value);
+      const totalPrice = parseFloat(document.getElementById('st-total-price').value);
+      const min = parseFloat(document.getElementById('st-min').value) || 0;
+      const exp = document.getElementById('st-exp').value;
+
+      if (!name || !qty || !totalPrice) return alert('Vyplň název, množství a cenu.');
+
+      const pricePerUnit = totalPrice / qty;
+      const existing = state.ingredients.find(i => i.name.toLowerCase() === name.toLowerCase());
+
+      if (existing) {
+        existing.stock += qty;
+        existing.pricePerUnit = pricePerUnit;
+        if (exp) existing.exp = exp;
+      } else {
+        state.ingredients.push({
+          id: Date.now().toString(),
+          name,
+          category,
+          unit,
+          stock: qty,
+          min,
+          pricePerUnit,
+          exp
+        });
+      }
+
+      document.getElementById('st-name').value = '';
+      document.getElementById('st-qty').value = '';
+      document.getElementById('st-total-price').value = '';
+      closeModal('stockModal');
+      saveState();
+    }
+
+    function addTempIngredient() {
+      const ingredientId = document.getElementById('rec-ing-select').value;
+      const qty = parseFloat(document.getElementById('rec-ing-qty').value);
+      if (!ingredientId || !qty || qty <= 0) return;
+
+      tempRecipeItems.push({ ingredientId, qty });
+      document.getElementById('rec-ing-qty').value = '';
+      renderTempRecipeItems();
+    }
+
+    function renderTempRecipeItems() {
+      document.getElementById('temp-recipe-ings').innerHTML = tempRecipeItems.map(it => {
+        const ing = state.ingredients.find(i => i.id === it.ingredientId);
+        return `<div>• ${ing.name}: ${it.qty} ${ing.unit} (${(ing.pricePerUnit * it.qty).toFixed(1)} Kč)</div>`;
+      }).join('');
+    }
+
+    function submitRecipe() {
+      const name = document.getElementById('rec-name').value.trim();
+      const sellingPrice = parseFloat(document.getElementById('rec-price').value);
+      const allergens = document.getElementById('rec-allergens').value.trim();
+
+      if (!name || !sellingPrice || tempRecipeItems.length === 0) {
+        return alert('Vyplň název, prodejní cenu a přidej alespoň jednu surovinu.');
+      }
+
+      state.recipes.push({
+        id: Date.now().toString(),
+        name,
+        sellingPrice,
+        allergens,
+        items: [...tempRecipeItems]
+      });
+
+      tempRecipeItems = [];
+      document.getElementById('rec-name').value = '';
+      document.getElementById('rec-price').value = '';
+      document.getElementById('temp-recipe-ings').innerHTML = '';
+      closeModal('recipeModal');
+      saveState();
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
